@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Math Assessment</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #e3f2fd;
+            cursor: pointer;
+            width: 200px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #bbdefb;
+        }
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+        .image {
+            font-size: 2em;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result {
+            text-align: center;
+        }
+        .correct {
+            color: #4caf50;
+        }
+        .incorrect {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="assessment">
+            <h1 style="text-align: center;">Singapore Math Assessment</h1>
+            <div id="questionContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: "counting",
+                question: "How many stars do you see?",
+                image: "⭐⭐⭐⭐⭐",
+                options: ["3", "5", "7"],
+                answer: "5"
+            },
+            {
+                type: "addition",
+                question: "What is 4 + 3?",
+                options: ["6", "7", "8"],
+                answer: "7"
+            },
+            {
+                type: "subtraction",
+                question: "If you have 9 candies and eat 2, how many are left?",
+                options: ["5", "6", "7"],
+                answer: "7"
+            },
+            {
+                type: "number_bonds",
+                question: "What number plus 6 equals 10?",
+                options: ["3", "4", "5"],
+                answer: "4"
+            },
+            {
+                type: "comparison",
+                question: "Which number is bigger: 8 or 5?",
+                options: ["5", "8"],
+                answer: "8"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+
+        function displayQuestion() {
+            const q = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            let html = `
+                <div class="question">${q.question}</div>
+                ${q.image ? `<div class="image">${q.image}</div>` : ''}
+                <div class="options">
+                    ${q.options.map(option => `
+                        <button onclick="checkAnswer('${option}')">${option}</button>
+                    `).join('')}
+                </div>
+                <div class="progress">Question ${currentQuestion + 1} of ${questions.length}</div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function checkAnswer(selected) {
+            const correct = selected === questions[currentQuestion].answer;
+            if (correct) score++;
+            
+            answers.push({
+                question: questions[currentQuestion].question,
+                correct: correct
+            });
+
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                showResults();
+            } else {
+                displayQuestion();
+            }
+        }
+
+        function showResults() {
+            const container = document.getElementById('questionContainer');
+            const percentage = (score / questions.length) * 100;
+            let feedback;
+            
+            if (percentage === 100) {
+                feedback = "Excellent! You've mastered these math concepts!";
+            } else if (percentage >= 80) {
+                feedback = "Great job! You're doing very well!";
+            } else if (percentage >= 60) {
+                feedback = "Good effort! Keep practicing to improve!";
+            } else {
+                feedback = "Keep practicing! You'll get better with time!";
+            }
+
+            let html = `
+                <div class="result">
+                    <h2>Assessment Complete!</h2>
+                    <p>You got ${score} out of ${questions.length} correct (${percentage}%)</p>
+                    <p>${feedback}</p>
+                    <h3>Your Answers:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        ${answers.map((a, i) => `
+                            <li class="${a.correct ? 'correct' : 'incorrect'}">
+                                Question ${i + 1}: ${a.correct ? '✓' : '✗'}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="resetAssessment()">Try Again</button>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function resetAssessment() {
+            currentQuestion = 0;
+            score = 0;
+            answers = [];
+            displayQuestion();
+        }
+
+        // Start the assessment
+        displayQuestion();
+    </script>
+</body>
+</html>
